@@ -26,6 +26,8 @@ library
                        
 
   build-depends:       base ^>= 4.12.0.0
+                     , trifecta
+                     , containers
                      
 
   ghc-options:         -Wall
@@ -70,7 +72,9 @@ test-suite log-file-parser-test
 
   build-depends:       base ^>= 4.12.0.0
                      , log-file-parser
-                     
+                     , hspec
+                     , raw-strings-qq
+                     , containers
 
   ghc-options:         -Wall
                        -threaded
