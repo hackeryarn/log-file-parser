@@ -3,6 +3,7 @@
 
 module Main (main) where
 
+import Data.Map (Map)
 import qualified Data.Map as M
 import Test.Hspec
 import Text.Trifecta
@@ -101,6 +102,26 @@ parsedSingleDay =
     , Activity (Time 22 0) "Sleep"
     ])
 
+expectedTimeByActivity :: Map String Time
+expectedTimeByActivity =
+  M.fromList
+     [ ("Breakfast", Time 2 0)
+     , ("Bumped head, passed out", Time 4 36)
+     , ("Commute home for rest", Time 1 (-30))
+     , ("Commuting home in rover", Time 0 30)
+     , ("Dinner", Time 2 15)
+     , ("Exercising in high-grav gym", Time 1 0)
+     , ("Go to medbay", Time 0 3)
+     , ("Lunch", Time 1 0)
+     , ("Patch self up", Time 0 5)
+     , ("Programming", Time 4 0)
+     , ("R&R", Time 2 (-30))
+     , ("Read", Time 2 (-30))
+     , ("Sanitizing moisture collector", Time 2 0)
+     , ("Shower", Time 0 15)
+     , ("Wake up, headache", Time 0 1)
+     ]
+
 maybeSuccess :: Result a -> Maybe a
 maybeSuccess (Success a) = Just a
 maybeSuccess _ = Nothing
@@ -145,3 +166,8 @@ main = hspec $ do
     it "parses a multi day log" $ do
       let result = pspl testLog
       maybeSuccess result `shouldBe` Just parsedTestLog
+  describe "time by activity" $ do
+    let pspl = ps parseLog mempty
+    it "parses a multi day log" $ do
+      let result = timeByActivity <$> pspl testLog
+      maybeSuccess result `shouldBe` Just expectedTimeByActivity

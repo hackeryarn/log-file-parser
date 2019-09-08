@@ -39,7 +39,7 @@ timeByActivity (Log days) = foldr (M.unionWith combineDays) mempty activitiesByD
   where
     combineDays (Time h m) (Time h' m') = Time (h + h') (m + m')
     activitiesByDay = M.foldr go [] days
-    go activities acc = (M.fromList $ zipWith timeSpent activities (tail activities)) : acc
+    go activities acc = M.fromList (zipWith timeSpent activities (tail activities)) : acc
     timeSpent (Activity (Time h m) description) (Activity (Time h' m') _) =
       (description, Time (h' - h) (m' - m))
 
