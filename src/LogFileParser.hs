@@ -4,6 +4,7 @@ module LogFileParser
        , Activity (..)
        , Time (..)
        , timeByActivity
+       , timePerDayByActivity
        , parseLog
        , parseDay
        , parseDate
@@ -35,11 +36,18 @@ newtype Log =
 
 
 timeByActivity :: Log -> Map ActivityDescription Time
-timeByActivity (Log days) = foldr (M.unionWith combineDays) mempty activitiesByDay
+timeByActivity (Log days) =
+  foldr (M.unionWith combineDays) mempty (M.foldr go [] days)
   where
+    go activities acc = activitiesByDay activities : acc
     combineDays (Time h m) (Time h' m') = Time (h + h') (m + m')
-    activitiesByDay = M.foldr go [] days
-    go activities acc = M.fromList (zipWith timeSpent activities (tail activities)) : acc
+
+timePerDayByActivity :: Log -> Map Date (Map ActivityDescription Time)
+timePerDayByActivity (Log days) = M.map activitiesByDay days
+
+activitiesByDay :: [Activity] -> Map ActivityDescription Time
+activitiesByDay activities = M.fromList $ zipWith timeSpent activities (tail activities)
+  where
     timeSpent (Activity (Time h m) description) (Activity (Time h' m') _) =
       (description, Time (h' - h) (m' - m))
 

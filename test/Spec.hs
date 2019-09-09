@@ -122,6 +122,35 @@ expectedTimeByActivity =
      , ("Wake up, headache", Time 0 1)
      ]
 
+expectedTimePerDayByActivity :: Map String (Map String Time)
+expectedTimePerDayByActivity =
+  M.fromList
+    [ ( "2025-02-05"
+      , M.fromList
+          [ ("Breakfast", Time 1 0)
+          , ("Commuting home in rover", Time 0 30)
+          , ("Dinner", Time 2 0)
+          , ("Exercising in high-grav gym", Time 1 0)
+          , ("Lunch", Time 1 0)
+          , ("Programming", Time 4 0)
+          , ("R&R", Time 2 (-30))
+          , ("Read", Time 1 (-15))
+          , ("Sanitizing moisture collector", Time 2 0)
+          , ("Shower", Time 0 15)
+          ])
+    , ( "2025-02-07"
+      , M.fromList
+          [ ("Breakfast", Time 1 0)
+          , ("Bumped head, passed out", Time 4 36)
+          , ("Commute home for rest", Time 1 (-30))
+          , ("Dinner", Time 0 15)
+          , ("Go to medbay", Time 0 3)
+          , ("Patch self up", Time 0 5)
+          , ("Read", Time 1 (-15))
+          , ("Wake up, headache", Time 0 1)
+          ])
+    ]
+
 maybeSuccess :: Result a -> Maybe a
 maybeSuccess (Success a) = Just a
 maybeSuccess _ = Nothing
@@ -171,3 +200,8 @@ main = hspec $ do
     it "parses a multi day log" $ do
       let result = timeByActivity <$> pspl testLog
       maybeSuccess result `shouldBe` Just expectedTimeByActivity
+  describe "time per day by activity" $ do
+    let pspl = ps parseLog mempty
+    it "parses a multi day log" $ do
+      let result = timePerDayByActivity <$> pspl testLog
+      maybeSuccess result `shouldBe` Just expectedTimePerDayByActivity
